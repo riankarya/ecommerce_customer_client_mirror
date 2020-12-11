@@ -41,13 +41,14 @@ export default {
       })
     },
     addToCart () {
+      const cartBersangkutan = this.$store.state.carts.filter(cart => cart.product.id === this.data.product.id)
       if (this.data.product.stock <= 0) {
         Swal.fire({
           icon: 'error',
           title: 'Sold Out!',
           text: 'Sorry...'
         })
-      } else {
+      } else if (!cartBersangkutan.length || (cartBersangkutan.length && cartBersangkutan[0].quantity < this.data.product.stock)) {
         this.$store.dispatch('addCart', this.data.product)
           .then(data => {
             Swal.fire({
@@ -61,16 +62,14 @@ export default {
           .catch(err => {
             console.log(err)
           })
+      } else if (cartBersangkutan[0].quantity >= this.data.product.stock) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Insufficient Stocks!'
+        })
       }
     }
-    // decrease () {
-    //   if (this.data.quantity === 1) return
-    //   this.$store.commit('updateQuantityCartKetengan', { cartId: this.data.id, quantity: this.data.quantity - 1 })
-    // },
-    // increase () {
-    //   if (this.data.quantity === this.data.product.stock) return
-    //   this.$store.commit('updateQuantityCartKetengan', { cartId: this.data.id, quantity: this.data.quantity + 1 })
-    // }
   }
 }
 </script>

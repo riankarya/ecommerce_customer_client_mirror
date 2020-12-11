@@ -50,18 +50,13 @@ export default {
   },
   created () {
     this.$store.dispatch('fetchProduct')
-    // this.containerEl = document.querySelector('.property-gallery')
-    // mixitup(this.containerEl)
   },
   mounted () {
-    // this.$router.push('/')
     this.containerEl = document.querySelector('.property-gallery')
-    console.log(this.containerEl, '<<<<<CONTAINER EL BOS TI MOUNTED>>>>>')
     this.mixer = mixitup(this.containerEl)
   },
   watch: {
     products () {
-      // console.log(containerEl, '<<<<<CONTAINER EL BOS>>>>>')
       this.containerEl = document.querySelector('.property-gallery')
       this.mixer = mixitup(this.containerEl)
     }

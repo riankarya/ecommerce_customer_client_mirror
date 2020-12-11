@@ -1,11 +1,12 @@
 <template>
   <div id="app">
+    <!-- {{ currentRoute }} -->
     <header class="header">
     <div class="container-fluid">
       <div class="row">
         <div class="col-xl-3 col-lg-2">
           <div class="header-logo">
-            <router-link to="/"><span class="icon_house"></span></router-link>
+            <router-link to="/"><span>RIANDAGANG</span></router-link>
           </div>
         </div>
         <div class="col-xl-6 col-lg-7">
@@ -13,17 +14,16 @@
         <div class="col-lg-3">
           <div class="header-right">
             <div class="header-right-auth">
-              <router-link class="logreg" v-if="!isLoggedIn" to="/login">Login</router-link>
-              <router-link class="logreg" v-if="!isLoggedIn" to="/register">Register</router-link>
+              <!-- <router-link class="logreg" v-if="!isLoggedIn" to="/login">Login</router-link> -->
+              <a style="cursor: pointer;" class="logreg" v-if="!isLoggedIn" @click="showModal = 'Login'">Login</a>
+              <a style="cursor: pointer;" class="logreg" v-if="!isLoggedIn" @click="showModal = 'Register'">Register</a>
+              <!-- <router-link class="logreg" v-if="!isLoggedIn" to="/register">Register</router-link> -->
             </div>
             <ul class="header-right-widget">
-              <!-- <li><a href="#"><span class="icon_heart_alt"></span>
-                  <div class="tip">2</div>
-                </a></li> -->
+                <!-- <li v-if="isLoggedIn">{{ currentUser }}</li> -->
                 <li><router-link v-if="isLoggedIn" to="/love"><span class="icon_heart_alt"></span>
                   <div class="tip">{{ loveCount }}</div>
                 </router-link></li>
-              <!-- <router-link v-if="isLoggedIn" to="/cart">Register</router-link> -->
                 <li><router-link v-if="isLoggedIn" to="/cart"><span class="icon_cart_alt"></span>
                   <div class="tip">{{ cartCount }}</div>
                 </router-link></li>
@@ -34,7 +34,33 @@
       </div>
     </div>
   </header>
-  <router-view/>
+<section class="banner set-bg" data-setbg="./assets/img/banner/banner-2.jpg" style="backgroundImage: url(https://png.pngtree.com/thumb_back/fw800/back_our/20190622/ourmid/pngtree-ancient-chinese-landscape-white-background-banner-image_233831.jpg)">
+    <div class="container">
+      <div class="row">
+        <div class="col-10 m-auto">
+          <div class="banner-slider owl-carousel">
+            <vueper-slides
+              class="no-shadow"
+              ref="myVueperSlides"
+              autoplay
+              @autoplay-pause="internalAutoPlaying = false"
+              @autoplay-resume="internalAutoPlaying = true">
+              <vueper-slide
+                v-for="(slide) in slides"
+                :key="slide.id"
+                :title="slide.title"
+                :content="slide.content"
+                :style="'border: none'"/>
+              <template v-slot:pause>
+                <i class="icon pause_circle_outline"></i>
+              </template>
+            </vueper-slides>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<router-view/>
   <section class="discount">
     <div class="container">
       <div class="row">
@@ -47,29 +73,32 @@
           <div class="discount-text">
             <div class="discount-text-title">
               <span>Discount</span>
-              <h2>2020</h2>
+              <h2>New Year 2021</h2>
               <h5><span>Sale</span> 150%</h5>
               <h5><span>YOU BUY WE</span>PAY</h5>
             </div>
             <div class="discount-countdown" id="countdown-time">
-              <div class="countdown-item">
-                <span>22</span>
-                <p>Days</p>
-              </div>
-              <div class="countdown-item">
-                <span>18</span>
-                <p>Hour</p>
-              </div>
-              <div class="countdown-item">
-                <span>46</span>
-                <p>Min</p>
-              </div>
-              <div class="countdown-item">
-                <span>05</span>
-                <p>Sec</p>
-              </div>
+              <countdown :time="time">
+                <template slot-scope="props">
+                  <div class="countdown-item">
+                    <span>{{ props.days }}</span>
+                    <p>Days</p>
+                  </div>
+                  <div class="countdown-item">
+                    <span>{{ props.hours }}</span>
+                    <p>Hour</p>
+                  </div>
+                  <div class="countdown-item">
+                    <span>{{ props.minutes }}</span>
+                    <p>Min</p>
+                  </div>
+                  <div class="countdown-item">
+                    <span>{{ props.seconds }}</span>
+                    <p>Sec</p>
+                  </div>
+                </template>
+              </countdown>
             </div>
-            <a href="#">Shop now</a>
           </div>
         </div>
       </div>
@@ -110,14 +139,68 @@
       </div>
     </div>
   </section>
+  <Login @change-modal="changeModal" v-if="showModal == 'Login'"></Login>
+  <Register @change-modal="changeModal" v-if="showModal == 'Register'"></Register>
   </div>
 
 </template>
 
 <script>
 import Swal from 'sweetalert2'
+import { VueperSlides, VueperSlide } from 'vueperslides'
+import Login from './components/LoginCard'
+import Register from './components/RegisterCard'
 export default {
+  data () {
+    return {
+      showModal: '',
+      slides: [
+        {
+          id: 'slide-1',
+          content: `<div class="banner-item">
+                  <div class="banner-text">
+                    <span>RianDagang Collection</span>
+                    <h1>New Year 2021 SALE!</h1>
+                    <span>you buy, we pay</span>
+                    <br>
+                  </div>
+                </div>`
+        },
+        {
+          id: 'slide-2',
+          content: `<div class="banner-item">
+                  <div class="banner-text">
+                    <span>RianDagang Collection</span>
+                    <h1>The Project X</h1>
+                  </div>
+                </div>`
+        },
+        {
+          id: 'slide-3',
+          content: `<div class="banner-item">
+                  <div class="banner-text">
+                    <span>RianDagang Collection</span>
+                    <h1>The Jakarta Warehouse Project</h1>
+                  </div>
+                </div>`
+        }
+      ],
+      time: (new Date((new Date()).getFullYear() + 1, 0, 1)) - (new Date())
+    }
+  },
+  components: {
+    VueperSlides,
+    VueperSlide,
+    Login,
+    Register
+  },
   methods: {
+    changeModal (payload) {
+      this.showModal = payload
+    },
+    handleSlideClick (dataset) {
+      console.log(dataset.index, dataset.name)
+    },
     logout () {
       Swal.fire({
         title: 'Are you sure?',
@@ -140,6 +223,11 @@ export default {
       })
     }
   },
+  watch: {
+    isLoggedIn: function (value) {
+      if (value) this.showModal = ''
+    }
+  },
   computed: {
     isLoggedIn: {
       get () {
@@ -155,6 +243,14 @@ export default {
       get () {
         return this.$store.state.loves.length
       }
+    },
+    currentUser: {
+      get () {
+        return this.$store.state.currentUser
+      }
+    },
+    currentRoute () {
+      return this.$router.currentRoute
     }
   },
   mounted () {
@@ -170,6 +266,7 @@ export default {
 </script>
 
 <style>
+@import "https://fonts.googleapis.com/css2?family=Cookie&display=swap";
 @import "./assets/styleSheet/style.css";
 @import "./assets/styleSheet/bootstrap.min.css";
 @import "./assets/styleSheet/elegant-icons.css";

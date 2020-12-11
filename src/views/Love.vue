@@ -37,27 +37,10 @@ export default {
   components: {
     LoveCard
   },
-  // data () {
-  //   // return {
-  //   //   updatedCart: []
-  //   // }
-  // },
   computed: {
-    // totalPrice () {
-    //   return this.$store.state.totalPrice
-    // },
     loves () {
-      console.log(this.$store.state.loves, 'ASUPPPPPPPPP TI LOVE.VUE')
       return this.$store.state.loves
     }
-  },
-  methods: {
-    // updateCart () {
-    //   this.$store.dispatch('updateCart')
-    // },
-    // checkout () {
-    //   this.$store.dispatch('checkout', false)
-    // }
   }
 }
 </script>

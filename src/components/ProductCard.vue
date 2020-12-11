@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 export default {
   name: 'productCard',
   props: {
@@ -36,15 +37,42 @@ export default {
   methods: {
     addLove () {
       this.$store.dispatch('addLove', this.data)
-    },
-    addCart () {
-      this.$store.dispatch('addCart', this.data)
         .then(data => {
-
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Item has been added to your wishlist!',
+            showConfirmButton: false,
+            timer: 1500
+          })
         })
         .catch(err => {
           console.log(err)
         })
+    },
+    addCart () {
+      const cartBersangkutan = this.$store.state.carts.filter(cart => cart.product.id === this.data.id)
+      if (!cartBersangkutan.length) {
+        this.$store.dispatch('addCart', this.data)
+          .then(data => {
+            Swal.fire({
+              position: 'top-end',
+              icon: 'success',
+              title: 'Item has been added to your cart!',
+              showConfirmButton: false,
+              timer: 1500
+            })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      } else if (cartBersangkutan[0].quantity <= this.data.stock) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Insufficient Stocks!'
+        })
+      }
     }
   },
   computed: {

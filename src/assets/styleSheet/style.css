@@ -680,10 +680,10 @@ ol {
 
 .discount-text-title:after {
 	position: absolute;
-	left: 50%;
+	left: 45%;
 	top: -38px;
-	height: 183px;
-	width: 183px;
+	height: 220px;
+	width: 220px;
 	background: #ffffff;
 	content: "";
 	border-radius: 50%;

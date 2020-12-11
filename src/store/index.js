@@ -1,6 +1,8 @@
 import Axios from 'axios'
+import { resolve } from 'core-js/fn/promise'
 import Vue from 'vue'
 import Vuex from 'vuex'
+// import Swal from 'sweetalert2'
 
 Vue.use(Vuex)
 
@@ -11,7 +13,8 @@ export default new Vuex.Store({
     isLoggedIn: false,
     carts: [],
     totalPrice: 0,
-    loves: []
+    loves: [],
+    currentUser: ''
   },
   mutations: {
     setProducts (state, payload) {
@@ -27,7 +30,6 @@ export default new Vuex.Store({
       state.carts = payload
     },
     updateQuantityCartKetengan (state, payload) {
-      console.log(payload, 'asuppppppppppppppppp')
       const newCarts = state.carts.map(elem => {
         if (payload.cartId === elem.id) {
           elem.quantity = payload.quantity
@@ -42,6 +44,9 @@ export default new Vuex.Store({
     },
     setLoves (state, payload) {
       state.loves = payload
+    },
+    setCurrentUser (state, payload) {
+      state.currentUser = payload
     }
   },
   actions: {
@@ -59,6 +64,7 @@ export default new Vuex.Store({
             localStorage.setItem('token', data.data.token)
             localStorage.setItem('id', data.data.id)
             context.commit('setIsLoggedIn', true)
+            context.commit('setCurrentUser', data.data.payload.email)
             resolve(data)
           })
           .catch(err => {
@@ -67,7 +73,6 @@ export default new Vuex.Store({
       })
     },
     register (context, payload) {
-      console.log('<<<<ASUP TI STATE>>>>', payload)
       return new Promise((resolve, reject) => {
         Axios({
           url: 'http://localhost:3000/users/register',
@@ -89,7 +94,6 @@ export default new Vuex.Store({
           method: 'get'
         })
           .then(data => {
-            console.log(data.data.data)
             data = data.data.data.map(elem => {
               return {
                 id: elem.id,
@@ -100,7 +104,6 @@ export default new Vuex.Store({
                 category: elem.category
               }
             })
-            console.log('<<<<ASUP TI FETCHPRODUCT VUE>>>>', data)
             context.commit('setProducts', data)
             resolve(data)
           })
@@ -109,31 +112,6 @@ export default new Vuex.Store({
           })
       })
     },
-    // fetchProductById (context, payload) {
-    //   return new Promise((resolve, reject) => {
-    //     Axios({
-    //       url: `http://localhost:3000/products/${payload.id}`,
-    //       method: 'get',
-    //       headers: { token: localStorage.token }
-    //     })
-    //       .then(data => {
-    //         data = {
-    //           id: data.data.data.id,
-    //           name: data.data.data.name,
-    //           image_url: data.data.data.image_url,
-    //           price: data.data.data.price,
-    //           stock: data.data.data.stock,
-    //           category: data.data.data.category
-    //         }
-    //         context.commit('setProduct', data)
-    //         console.log(this.state.product)
-    //         resolve(data)
-    //       })
-    //       .catch(err => {
-    //         reject(err)
-    //       })
-    //   })
-    // },
     addCart (context, payload) {
       return new Promise((resolve, reject) => {
         Axios({
@@ -162,7 +140,6 @@ export default new Vuex.Store({
             const totalPrice = data.data.reduce((acc, elem) => {
               return acc + elem.quantity * elem.product.price
             }, 0)
-            console.log(totalPrice, 'ASUP TI FETCH TOTAL PRICE STORE')
             context.commit('setCarts', data.data)
             context.commit('setTotalPrice', totalPrice)
             resolve(data)
@@ -174,7 +151,6 @@ export default new Vuex.Store({
     },
     updateCart (context, payload) {
       return Promise.all(context.state.carts.map(elem => {
-        console.log(elem.product)
         return Axios({
           url: `http://localhost:3000/carts/${elem.id}`,
           method: 'patch',
@@ -184,10 +160,10 @@ export default new Vuex.Store({
       }))
         .then(data => {
           context.dispatch('fetchCart')
-          console.log(data, 'BERHASIL UPDATE')
+          resolve(data)
         })
         .catch(err => {
-          console.log(err, 'GAGILS')
+          console.log(err)
         })
     },
     deleteCart (context, payload) {
@@ -208,7 +184,6 @@ export default new Vuex.Store({
     },
     checkout (context, payload) {
       return Promise.all(context.state.carts.map(elem => {
-        console.log(elem.product)
         return Axios({
           url: `http://localhost:3000/carts/${elem.id}`,
           method: 'put',
